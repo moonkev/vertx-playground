@@ -31,17 +31,17 @@ class GraphQLServiceVerticle : AbstractVerticle() {
         val runtimeWiring = RuntimeWiring.newRuntimeWiring()
             .type("Query") { builder ->
                 builder.dataFetcher("fibonacci") { env: DataFetchingEnvironment ->
-                    val n: Int? = env.getArgument("n")
+                    val n: Int = env.getArgumentOrDefault("n", 0)
                     eventBus.request<Int>("fibonacci.worker", n).map { f -> f.body() }
                         .toCompletionStage()
                 }
                 builder.dataFetcher("fibonacciLoadTest") { env: DataFetchingEnvironment ->
-                    val n: Int? = env.getArgument("n")
+                    val n: Int = env.getArgumentOrDefault("n", 0)
                     val count: Int = env.getArgumentOrDefault("count", 0)
                     val now = System.currentTimeMillis()
-                    val eventFutures = List(count) { eventBus.request< Message<Int>>("fibonacci.worker", n) }
+                    val eventFutures = List(count) { eventBus.request<Message<Int>>("fibonacci.worker", n) }
                     Future.all<Int>(eventFutures)
-                        .map{
+                        .map {
                             val completionMillis = System.currentTimeMillis() - now
                             "Completion of $count Fibonacci Requests took $completionMillis ms"
                         }

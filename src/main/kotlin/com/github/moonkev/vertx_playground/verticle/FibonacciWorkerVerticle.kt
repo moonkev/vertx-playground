@@ -7,7 +7,7 @@ class FibonacciWorkerVerticle : AbstractVerticle() {
 
   private val logger = KotlinLogging.logger {}
 
-  private fun calculate(n: Long): Long {
+  private fun calculate(n: Int): Int {
     if (n <= 1) {
       return n
     }
@@ -18,7 +18,7 @@ class FibonacciWorkerVerticle : AbstractVerticle() {
     val eventBus = vertx.eventBus()
 
     eventBus.consumer<Int>("fibonacci.worker") {
-      val n = it.body().toLong()
+      val n = it.body()
       val calculated = calculate(n)
       logger.info { "fibonacci for $n calculated: $calculated" }
       it.reply(calculated)

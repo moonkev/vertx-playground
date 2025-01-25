@@ -27,7 +27,7 @@ class RestServiceVerticle : AbstractVerticle() {
 
       val address = context.request().connection().remoteAddress().toString()
       val queryParams = context.queryParams()
-      val num = queryParams.get("num")?.toLong() ?: 0
+      val num = queryParams.get("num")?.toInt() ?: 0
 
       grpcClient.request(mathGrpcServer, VertxMathGrpcClient.Fibonacci)
         .compose { request ->

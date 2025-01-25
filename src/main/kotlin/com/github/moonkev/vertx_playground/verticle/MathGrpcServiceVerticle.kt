@@ -19,7 +19,7 @@ class MathGrpcServiceVerticle : AbstractVerticle() {
     grpcServer.callHandler(VertxMathGrpcServer.Fibonacci) { grpcRequest ->
       grpcRequest.handler { fibonacciRequest ->
         eventBus
-          .request<Long>("fibonacci.worker", fibonacciRequest.n)
+          .request<Int>("fibonacci.worker", fibonacciRequest.n)
           .onComplete {ar ->
             val result = ar.result().body()
             if (ar.succeeded()) {
@@ -33,6 +33,27 @@ class MathGrpcServiceVerticle : AbstractVerticle() {
                   .end()
             }
           }
+      }
+    }
+
+    grpcServer.callHandler(VertxMathGrpcServer.FibonacciStream) { grpcRequest ->
+      grpcRequest.handler { fibonacciRequest ->
+        eventBus
+          .request<Int>("fibonacci.worker", fibonacciRequest.n)
+          .onComplete {ar ->
+            val result = ar.result().body()
+            if (ar.succeeded()) {
+              val response = FibonacciResponse.newBuilder().setResult(result).build()
+              grpcRequest.response().write(response)
+            } else {
+              grpcRequest
+                .response()
+                .status(GrpcStatus.INTERNAL)
+                .statusMessage("Failed to retrieve result from worker")
+                .end()
+            }
+          }
+        grpcRequest.endHandler{ grpcRequest.response().end() }
       }
     }
 

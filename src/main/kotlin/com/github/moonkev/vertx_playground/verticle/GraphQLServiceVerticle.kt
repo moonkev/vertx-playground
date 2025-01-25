@@ -8,10 +8,10 @@ import graphql.schema.idl.SchemaParser
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
+import io.vertx.core.eventbus.Message
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
-import java.util.concurrent.CompletableFuture
 
 class GraphQLServiceVerticle : AbstractVerticle() {
 
@@ -20,15 +20,31 @@ class GraphQLServiceVerticle : AbstractVerticle() {
     override fun start() {
 
         val eventBus = vertx.eventBus()
-        val schema = "type Query { fibonacci(n: Int!): Int! }"
+        val schema = """
+            type Query { 
+                fibonacci(n: Int!): Int! 
+                fibonacciLoadTest(n: Int!, count: Int!): String!
+            }
+        """.trimIndent()
         val schemaParser = SchemaParser()
         val typeRegistry = schemaParser.parse(schema)
         val runtimeWiring = RuntimeWiring.newRuntimeWiring()
             .type("Query") { builder ->
                 builder.dataFetcher("fibonacci") { env: DataFetchingEnvironment ->
-                    //TODO: FIX THIS CASTING CRAP
-                    val n = env.getArgumentOrDefault<Int>("n", 0)
-                    eventBus.request<Long>("fibonacci.worker", n.toLong()).map { f -> f.body().toInt() }
+                    val n: Int? = env.getArgument("n")
+                    eventBus.request<Int>("fibonacci.worker", n).map { f -> f.body() }
+                        .toCompletionStage()
+                }
+                builder.dataFetcher("fibonacciLoadTest") { env: DataFetchingEnvironment ->
+                    val n: Int? = env.getArgument("n")
+                    val count: Int = env.getArgumentOrDefault("count", 0)
+                    val now = System.currentTimeMillis()
+                    val eventFutures = List(count) { eventBus.request< Message<Int>>("fibonacci.worker", n) }
+                    Future.all<Int>(eventFutures)
+                        .map{
+                            val completionMillis = System.currentTimeMillis() - now
+                            "Completion of $count Fibonacci Requests took $completionMillis ms"
+                        }
                         .toCompletionStage()
                 }
             }

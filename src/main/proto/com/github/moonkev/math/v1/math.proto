@@ -6,12 +6,13 @@ option java_multiple_files = true;
 
 service Math {
   rpc Fibonacci (FibonacciRequest) returns (FibonacciResponse) {}
+  rpc FibonacciStream (stream FibonacciRequest) returns (stream FibonacciResponse) {}
 }
 
 message FibonacciRequest {
-  int64 n = 1;
+  int32 n = 1;
 }
 
 message FibonacciResponse {
-  int64 result = 1;
+  int32 result = 1;
 }

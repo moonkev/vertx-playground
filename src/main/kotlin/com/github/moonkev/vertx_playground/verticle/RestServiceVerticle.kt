@@ -49,7 +49,7 @@ class RestServiceVerticle : AbstractVerticle() {
           } else {
             context.json(
               json {
-                obj("status" to "failed")
+                obj("status" to "failed ${ar.cause().message}")
               }
             )
           }

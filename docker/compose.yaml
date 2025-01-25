@@ -1,0 +1,73 @@
+name: vertx_playground
+
+services:
+  zookeeper:
+    image: zookeeper:latest
+  fibonacci-worker:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.file=/app/conf/fibonacci-worker.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    deploy:
+      mode: replicated
+      replicas: 6
+  rest-service:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.file=/app/conf/rest-service.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    ports:
+      - "28080:8080"
+  graphql-service:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.file=/app/conf/graphql-service.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    ports:
+      - "38080:8080"
+  math-grpc-service:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.file=/app/conf/math-grpc-service.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+

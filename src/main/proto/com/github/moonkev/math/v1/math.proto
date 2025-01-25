@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package com.github.moonkev.math.v1;
+
+option java_multiple_files = true;
+
+service Math {
+  rpc Fibonacci (FibonacciRequest) returns (FibonacciResponse) {}
+}
+
+message FibonacciRequest {
+  int64 n = 1;
+}
+
+message FibonacciResponse {
+  int64 result = 1;
+}

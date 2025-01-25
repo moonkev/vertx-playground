@@ -1,0 +1,8 @@
+{
+  "zookeeperHosts": "zookeeper",
+  "rootPath": "vertx-cluster",
+  "retry": {
+    "initialSleepTime": 3000,
+    "maxTimes": 3
+  }
+}

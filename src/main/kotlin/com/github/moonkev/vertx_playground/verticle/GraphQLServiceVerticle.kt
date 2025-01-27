@@ -12,6 +12,7 @@ import io.vertx.core.eventbus.Message
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
+import java.util.LinkedList
 
 class GraphQLServiceVerticle : AbstractVerticle() {
 
@@ -39,7 +40,16 @@ class GraphQLServiceVerticle : AbstractVerticle() {
                     val n: Int = env.getArgumentOrDefault("n", 0)
                     val count: Int = env.getArgumentOrDefault("count", 0)
                     val now = System.currentTimeMillis()
-                    val eventFutures = List(count) { eventBus.request<Message<Int>>("fibonacci.worker", n) }
+                    val requests = (1..count).toMutableList()
+                    fun schedule(): Future<Int> {
+                        return if (requests.isNotEmpty()) {
+                            requests.removeFirst()
+                            eventBus.request<Message<Int>>("fibonacci.worker", n).flatMap{ schedule() }
+                        } else {
+                            Future.succeededFuture(0)
+                        }
+                    }
+                    val eventFutures = List(100) { schedule() }
                     Future.all<Int>(eventFutures)
                         .map {
                             val completionMillis = System.currentTimeMillis() - now

@@ -10,31 +10,37 @@ import graphql.schema.idl.RuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
 import io.github.oshai.kotlinlogging.KotlinLogging
-import io.vertx.core.AbstractVerticle
 import io.vertx.core.Future
+import io.vertx.core.Promise
+import io.vertx.core.VerticleBase
 import io.vertx.core.eventbus.Message
+import io.vertx.core.http.HttpServer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
 
-class GraphQLServiceVerticle : AbstractVerticle() {
+class GraphQLServiceVerticle : VerticleBase() {
 
     private val logger = KotlinLogging.logger { }
 
-    override fun start() {
-
-        val eventBus = vertx.eventBus()
-        eventBus.registerDefaultCodec(FibonacciRequest::class.java, FibonacciRequestCodec())
-        eventBus.registerDefaultCodec(FibonacciResponse::class.java, FibonacciResponseCodec())
-
-        val schema = """
+    companion object {
+        private val SCHEMA = """
             type Query { 
                 fibonacci(n: Int!): Int! 
                 fibonacciLoadTest(n: Int!, count: Int!): String!
             }
         """.trimIndent()
+    }
+
+    override fun start(): Future<HttpServer> {
+
+        val eventBus = vertx.eventBus()
+        eventBus.registerDefaultCodec(FibonacciRequest::class.java, FibonacciRequestCodec())
+        eventBus.registerDefaultCodec(FibonacciResponse::class.java, FibonacciResponseCodec())
+        val maxOutboundEvents: Int = config().getInteger("max-outbound-events", 1000)
+
         val schemaParser = SchemaParser()
-        val typeRegistry = schemaParser.parse(schema)
+        val typeRegistry = schemaParser.parse(SCHEMA)
         val runtimeWiring = RuntimeWiring.newRuntimeWiring()
             .type("Query") { builder ->
                 builder.dataFetcher("fibonacci") { env: DataFetchingEnvironment ->
@@ -47,21 +53,35 @@ class GraphQLServiceVerticle : AbstractVerticle() {
                 }
                 builder.dataFetcher("fibonacciLoadTest") { env: DataFetchingEnvironment ->
                     val n: Int = env.getArgumentOrDefault("n", 0)
-                    val request = FibonacciRequest.newBuilder().setN(n).build()
                     val count: Int = env.getArgumentOrDefault("count", 0)
                     val now = System.currentTimeMillis()
-                    val requests = (1..count).toMutableList()
-                    fun schedule(): Future<FibonacciResponse> {
-                        return if (requests.isNotEmpty()) {
-                            requests.removeFirst()
-                            eventBus
-                                .request<Message<Int>>("fibonacci.worker.proto", request)
-                                .flatMap{ schedule() }
-                        } else {
-                            Future.succeededFuture(FibonacciResponse.getDefaultInstance())
-                        }
+
+                    val requests = (1..count).toMutableList().map {
+                        FibonacciRequest.newBuilder().setN(n).build()
                     }
-                    val eventFutures = List(100) { schedule() }
+
+                    val eventFutures = if (count <= maxOutboundEvents) {
+                        requests.map { eventBus.request("fibonacci.worker.proto", it) }
+                    } else {
+                        var remaining = count
+                        val promises = List(requests.size) { Promise.promise<Message<FibonacciResponse>>() }
+                        fun schedule() {
+                            val idx = count - remaining
+                            val request = requests[idx]
+                            eventBus
+                                .request<FibonacciResponse>("fibonacci.worker.proto", request)
+                                .onComplete { ar ->
+                                    promises[idx].handle(ar)
+                                    if (remaining != 0) {
+                                        schedule()
+                                    }
+                                }
+                            remaining -= 1
+                        }
+                        repeat(maxOutboundEvents) { schedule() }
+                        promises.map { it.future() }
+                    }
+
                     Future.all<Int>(eventFutures)
                         .map {
                             val completionMillis = System.currentTimeMillis() - now
@@ -71,6 +91,7 @@ class GraphQLServiceVerticle : AbstractVerticle() {
                 }
             }
             .build()
+
         val graphqlSchema = SchemaGenerator().makeExecutableSchema(typeRegistry, runtimeWiring)
         val graphql = GraphQL.newGraphQL(graphqlSchema).build()
         val router = Router.router(vertx)
@@ -78,7 +99,7 @@ class GraphQLServiceVerticle : AbstractVerticle() {
         router.post().handler(BodyHandler.create())
         router.route("/graphql").handler(GraphQLHandler.create(graphql))
 
-        vertx
+        return vertx
             .createHttpServer()
             .requestHandler(router)
             .listen(config().getInteger("port")).onSuccess { server ->

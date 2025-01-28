@@ -1,5 +1,9 @@
 package com.github.moonkev.vertx_playground.verticle
 
+import com.github.moonkev.math.v1.FibonacciRequest
+import com.github.moonkev.math.v1.FibonacciResponse
+import com.github.moonkev.vertx_playground.codec.FibonacciRequestCodec
+import com.github.moonkev.vertx_playground.codec.FibonacciResponseCodec
 import graphql.GraphQL
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.RuntimeWiring
@@ -12,7 +16,6 @@ import io.vertx.core.eventbus.Message
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
-import java.util.LinkedList
 
 class GraphQLServiceVerticle : AbstractVerticle() {
 
@@ -21,6 +24,9 @@ class GraphQLServiceVerticle : AbstractVerticle() {
     override fun start() {
 
         val eventBus = vertx.eventBus()
+        eventBus.registerDefaultCodec(FibonacciRequest::class.java, FibonacciRequestCodec())
+        eventBus.registerDefaultCodec(FibonacciResponse::class.java, FibonacciResponseCodec())
+
         val schema = """
             type Query { 
                 fibonacci(n: Int!): Int! 
@@ -33,20 +39,26 @@ class GraphQLServiceVerticle : AbstractVerticle() {
             .type("Query") { builder ->
                 builder.dataFetcher("fibonacci") { env: DataFetchingEnvironment ->
                     val n: Int = env.getArgumentOrDefault("n", 0)
-                    eventBus.request<Int>("fibonacci.worker", n).map { f -> f.body() }
+                    val request = FibonacciRequest.newBuilder().setN(n).build()
+                    eventBus
+                        .request<FibonacciResponse>("fibonacci.worker.proto", request)
+                        .map { f -> f.body().result }
                         .toCompletionStage()
                 }
                 builder.dataFetcher("fibonacciLoadTest") { env: DataFetchingEnvironment ->
                     val n: Int = env.getArgumentOrDefault("n", 0)
+                    val request = FibonacciRequest.newBuilder().setN(n).build()
                     val count: Int = env.getArgumentOrDefault("count", 0)
                     val now = System.currentTimeMillis()
                     val requests = (1..count).toMutableList()
-                    fun schedule(): Future<Int> {
+                    fun schedule(): Future<FibonacciResponse> {
                         return if (requests.isNotEmpty()) {
                             requests.removeFirst()
-                            eventBus.request<Message<Int>>("fibonacci.worker", n).flatMap{ schedule() }
+                            eventBus
+                                .request<Message<Int>>("fibonacci.worker.proto", request)
+                                .flatMap{ schedule() }
                         } else {
-                            Future.succeededFuture(0)
+                            Future.succeededFuture(FibonacciResponse.getDefaultInstance())
                         }
                     }
                     val eventFutures = List(100) { schedule() }

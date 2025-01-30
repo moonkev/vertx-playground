@@ -39,7 +39,7 @@ tasks.distZip.configure {
   enabled = false
 }
 
-val vertxVersion = "5.0.0.CR3"
+val vertxVersion = "5.0.0.CR4"
 val junitJupiterVersion = "5.9.1"
 val launcherClassName = "io.vertx.launcher.application.VertxApplication"
 

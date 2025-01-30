@@ -8,6 +8,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.core.Future
 import io.vertx.core.VerticleBase
 import io.vertx.core.buffer.Buffer
+import java.time.ZonedDateTime
 
 class FibonacciWorkerVerticle : VerticleBase() {
 
@@ -21,9 +22,17 @@ class FibonacciWorkerVerticle : VerticleBase() {
     }
 
     private fun response(request: FibonacciRequest): FibonacciResponse {
+        val start = System.nanoTime()
+        ZonedDateTime.now()
         val calculated = calculate(request.n)
         logger.debug { "fibonacci for ${request.n} calculated: $calculated" }
-        return FibonacciResponse.newBuilder().setResult(calculated).build()
+        val duration = System.nanoTime() - start
+        return FibonacciResponse
+            .newBuilder()
+            .setN(request.n)
+            .setResult(calculated)
+            .setExecutionNanos(duration)
+            .build()
     }
 
     override fun start(): Future<*> {

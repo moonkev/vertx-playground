@@ -1,7 +1,9 @@
 package com.github.moonkev.vertx_playground.verticle
 
+import com.github.moonkev.math.v1.FibonacciRequest
 import com.github.moonkev.math.v1.FibonacciResponse
 import com.github.moonkev.math.v1.VertxMathGrpcServer
+import com.github.moonkev.vertx_playground.codec.FibonacciRequestCodec
 import com.github.moonkev.vertx_playground.codec.FibonacciResponseCodec
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.core.Future
@@ -19,6 +21,7 @@ class MathGrpcServiceVerticle : VerticleBase() {
         val httpServer = vertx.createHttpServer()
 
         val eventBus = vertx.eventBus()
+        eventBus.registerDefaultCodec(FibonacciRequest::class.java, FibonacciRequestCodec())
         eventBus.registerDefaultCodec(FibonacciResponse::class.java, FibonacciResponseCodec())
 
         grpcServer.callHandler(VertxMathGrpcServer.Fibonacci) { grpcRequest ->
@@ -40,9 +43,9 @@ class MathGrpcServiceVerticle : VerticleBase() {
         }
 
         grpcServer.callHandler(VertxMathGrpcServer.FibonacciStream) { grpcRequest ->
-            grpcRequest.handler { fibonacciRequest ->
+            grpcRequest.messageHandler { message ->
                 eventBus
-                    .request<FibonacciResponse>("fibonacci.worker.raw", fibonacciRequest)
+                    .request<FibonacciResponse>("fibonacci.worker.raw", message.payload())
                     .onComplete { ar ->
                         if (ar.succeeded()) {
                             grpcRequest.response().write(ar.result().body())
@@ -54,7 +57,10 @@ class MathGrpcServiceVerticle : VerticleBase() {
                                 .end()
                         }
                     }
-                grpcRequest.endHandler { grpcRequest.response().end() }
+                grpcRequest.endHandler {
+                    logger.debug { "FibonacciStream closed"}
+                    grpcRequest.response().end()
+                }
             }
         }
 

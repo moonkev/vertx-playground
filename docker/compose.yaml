@@ -70,4 +70,22 @@ services:
         restart: true
     expose:
       - "5555"
+  fibonacci-bot:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.file=/app/conf/fibonacci-bot.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    deploy:
+      mode: replicated
+      replicas: 2
 

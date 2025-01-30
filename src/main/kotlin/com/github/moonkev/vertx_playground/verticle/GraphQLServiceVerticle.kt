@@ -18,6 +18,8 @@ import io.vertx.core.http.HttpServer
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.nanoseconds
 
 class GraphQLServiceVerticle : VerticleBase() {
 
@@ -82,10 +84,14 @@ class GraphQLServiceVerticle : VerticleBase() {
                         promises.map { it.future() }
                     }
 
-                    Future.all<Int>(eventFutures)
-                        .map {
-                            val completionMillis = System.currentTimeMillis() - now
-                            "Completion of $count Fibonacci Requests took $completionMillis ms"
+                    Future.all<Message<FibonacciResponse>>(eventFutures)
+                        .map { vs ->
+                            val totalExecTime = vs.list<Message<FibonacciResponse>>().fold(0L) {
+                                acc, res -> acc + res.body().executionNanos
+                            }
+                            val averageTime = (totalExecTime.toDouble() / count).nanoseconds
+                            val completionTime = (System.currentTimeMillis() - now).milliseconds
+                            "Completion time = $completionTime, Average calculation time = $averageTime"
                         }
                         .toCompletionStage()
                 }

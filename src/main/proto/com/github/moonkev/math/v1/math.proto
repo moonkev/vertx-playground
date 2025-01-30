@@ -14,5 +14,7 @@ message FibonacciRequest {
 }
 
 message FibonacciResponse {
-  int32 result = 1;
+  int32 n = 1;
+  int32 result = 2;
+  int64 execution_nanos = 3;
 }

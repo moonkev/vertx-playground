@@ -43,7 +43,7 @@ class FibonacciBotVerticle : VerticleBase() {
                     logger.error(error) { "Error processing FibonacciRequest" }
                 }
                 grpcClientResponse.endHandler { _ ->
-                    logger.debug { "FibonacciStream closed" }
+                    logger.info { "FibonacciStream closed" }
                     vertx.cancelTimer(timerId)
                     grpcClientResponse.end()
                 }

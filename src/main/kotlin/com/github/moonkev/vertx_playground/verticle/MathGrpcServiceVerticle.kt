@@ -50,15 +50,11 @@ class MathGrpcServiceVerticle : VerticleBase() {
                         if (ar.succeeded()) {
                             grpcRequest.response().write(ar.result().body())
                         } else {
-                            grpcRequest
-                                .response()
-                                .status(GrpcStatus.INTERNAL)
-                                .statusMessage("Failed to retrieve result from worker")
-                                .end()
+                            logger.error { "Error in fibonacci worker request: ${ar.cause().message}"}
                         }
                     }
                 grpcRequest.endHandler {
-                    logger.debug { "FibonacciStream closed"}
+                    logger.info { "FibonacciStream closed"}
                     grpcRequest.response().end()
                 }
             }

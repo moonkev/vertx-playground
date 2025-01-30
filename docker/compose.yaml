@@ -83,9 +83,12 @@ services:
       zookeeper:
         condition: service_started
         restart: true
+      math-grpc-service:
+        condition: service_started
+        restart: true
     expose:
       - "5555"
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
 

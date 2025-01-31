@@ -1,0 +1,21 @@
+dependencies:
+- name: zookeeper
+  repository: file://../zookeeper
+  version: 0.1.0
+- name: fibonacci-worker
+  repository: file://../fibonacci-worker
+  version: 0.1.0
+- name: grpc-service
+  repository: file://../grpc-service
+  version: 0.1.0
+- name: graphql-service
+  repository: file://../graphql-service
+  version: 0.1.0
+- name: rest-service
+  repository: file://../rest-service
+  version: 0.1.0
+- name: fibonacci-bot
+  repository: file://../fibonacci-bot
+  version: 0.1.0
+digest: sha256:049f9bb9f67fc54f83edb21c6942592701d971f450d2e8a7cbf1b230282fff48
+generated: "2025-01-31T15:43:51.814186586-06:00"

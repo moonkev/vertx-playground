@@ -12,7 +12,7 @@ import io.vertx.core.http.HttpServer
 import io.vertx.grpc.common.GrpcStatus
 import io.vertx.grpc.server.GrpcServer
 
-class MathGrpcServiceVerticle : VerticleBase() {
+class GrpcServiceVerticle : VerticleBase() {
 
     private val logger = KotlinLogging.logger {}
 

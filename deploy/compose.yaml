@@ -55,13 +55,13 @@ services:
       - "5555"
     ports:
       - "38080:8080"
-  math-grpc-service:
+  grpc-service:
     image: moonkev/vertx_playground:1.0
     command:
       - "java"
       - "-cp"
       - "/app/conf:/app/uber.jar"
-      - "-Dconfig.file=/app/conf/math-grpc-service.conf"
+      - "-Dconfig.file=/app/conf/grpc-service.conf"
       - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
@@ -83,7 +83,7 @@ services:
       zookeeper:
         condition: service_started
         restart: true
-      math-grpc-service:
+      grpc-service:
         condition: service_started
         restart: true
     expose:

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-service
+  labels:
+    app: rest-service
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: rest-service
+  template:
+    metadata:
+      labels:
+        app: rest-service
+    spec:
+      containers:
+        - name: rest-service
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "java"
+            - "-cp"
+            - "/app/conf:/app/uber.jar"
+            - "-Dconfig.file=/app/conf/rest-service.conf"
+            - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
+            - "com.github.moonkev.vertx_playground.MainKt"
+          ports:
+            - containerPort: {{ .Values.cluster.port }}
+              protocol: TCP
+            - containerPort: {{ .Values.service.port }}
+              protocol: TCP

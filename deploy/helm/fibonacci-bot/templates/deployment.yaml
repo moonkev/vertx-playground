@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fibonacci-bot
+  labels:
+    app: fibonacci-bot
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: fibonacci-bot
+  template:
+    metadata:
+      labels:
+        app: fibonacci-bot
+    spec:
+      containers:
+        - name: fibonacci-bot
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - "java"
+            - "-cp"
+            - "/app/conf:/app/uber.jar"
+            - "-Dconfig.file=/app/conf/fibonacci-bot.conf"
+            - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
+            - "com.github.moonkev.vertx_playground.MainKt"
+          ports:
+            - containerPort: {{ .Values.cluster.port }}
+              protocol: TCP

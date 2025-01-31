@@ -1,0 +1,24 @@
+apiVersion: v2
+name: vertx-playground-full
+description: An umbrella chart for managing all vertx-playground services
+version: 0.1.0
+
+dependencies:
+  - name: zookeeper
+    version: "0.1.0"
+    repository: "file://../zookeeper"
+  - name: fibonacci-worker
+    version: "0.1.0"
+    repository: "file://../fibonacci-worker"
+  - name: grpc-service
+    version: "0.1.0"
+    repository: "file://../grpc-service"
+  - name: graphql-service
+    version: "0.1.0"
+    repository: "file://../graphql-service"
+  - name: rest-service
+    version: "0.1.0"
+    repository: "file://../rest-service"
+  - name: fibonacci-bot
+    version: "0.1.0"
+    repository: "file://../fibonacci-bot"

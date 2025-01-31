@@ -1,0 +1,3 @@
+apiVersion: v2
+name: fibonacci-worker
+version: 0.1.0

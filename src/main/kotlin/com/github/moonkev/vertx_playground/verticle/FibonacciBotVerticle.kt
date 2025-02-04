@@ -24,7 +24,7 @@ class FibonacciBotVerticle : VerticleBase() {
 
         return client
             .request(mathGrpcServer, VertxMathGrpcClient.FibonacciStream)
-            .compose { request ->
+            .flatMap { request ->
                 var spamCount = 0
                 val timerId = vertx.setPeriodic(interval) { _ ->
                     val n = Random.nextInt(maxN)
@@ -34,18 +34,18 @@ class FibonacciBotVerticle : VerticleBase() {
                         logger.info { "FibonacciBot has spammed $spamCount requests" }
                     }
                 }
-                request.response().map { Pair(timerId, it) }
-            }.onSuccess { (timerId, grpcClientResponse) ->
-                grpcClientResponse.handler { fibonacciResponse ->
-                    logger.debug { "Fibonacci(${fibonacciResponse.n}) = ${fibonacciResponse.result}" }
-                }
-                grpcClientResponse.exceptionHandler { error ->
-                    logger.error(error) { "Error processing FibonacciRequest" }
-                }
-                grpcClientResponse.endHandler { _ ->
-                    logger.info { "FibonacciStream closed" }
-                    vertx.cancelTimer(timerId)
-                    grpcClientResponse.end()
+                request.response().map { grpcClientResponse ->
+                    grpcClientResponse.handler { fibonacciResponse ->
+                        logger.debug { "Fibonacci(${fibonacciResponse.n}) = ${fibonacciResponse.result}" }
+                    }
+                    grpcClientResponse.exceptionHandler { error ->
+                        logger.error(error) { "Error processing FibonacciRequest" }
+                    }
+                    grpcClientResponse.endHandler { _ ->
+                        logger.info { "FibonacciStream closed" }
+                        vertx.cancelTimer(timerId)
+                        grpcClientResponse.end()
+                    }
                 }
             }
     }

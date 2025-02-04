@@ -8,7 +8,7 @@ import io.vertx.core.eventbus.MessageCodec
 class FibonacciRequestCodec : MessageCodec<FibonacciRequest, FibonacciRequest> {
 
     companion object {
-       private const val CODEC_NAME = "FibonacciRequestCode"
+       private const val CODEC_NAME = "FibonacciRequestCodec"
     }
 
     override fun name(): String {

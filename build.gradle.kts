@@ -64,6 +64,7 @@ dependencies {
   implementation("io.vertx:vertx-lang-kotlin-coroutines")
   implementation("io.vertx:vertx-launcher-application")
   implementation("io.vertx:vertx-reactive-streams")
+  implementation("io.vertx:vertx-rx-java3")
   implementation("io.vertx:vertx-shell")
   implementation("io.vertx:vertx-web-graphql")
   implementation("io.vertx:vertx-zookeeper")

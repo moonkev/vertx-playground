@@ -4,6 +4,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.config.ConfigRetriever
 import io.vertx.config.ConfigRetrieverOptions
 import io.vertx.core.DeploymentOptions
+import io.vertx.core.ThreadingModel
 import io.vertx.core.Vertx
 import io.vertx.kotlin.config.configStoreOptionsOf
 import io.vertx.kotlin.core.deploymentOptionsOf
@@ -36,7 +37,7 @@ fun main() {
             )
             ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(hoconFileStore)).config.flatMap { config ->
                 DeploymentOptions()
-                val deploymentOptions = deploymentOptionsOf(config = config)
+                val deploymentOptions = deploymentOptionsOf(config = config, threadingModel = ThreadingModel.VIRTUAL_THREAD)
                 vertx.deployVerticle(config.getString("verticle-name"), deploymentOptions)
             }
                 .onSuccess { verticleId ->

@@ -34,6 +34,9 @@ services:
       zookeeper:
         condition: service_started
         restart: true
+      grpc-service:
+        condition: service_started
+        restart: true
     expose:
       - "5555"
     ports:
@@ -51,6 +54,9 @@ services:
       zookeeper:
         condition: service_started
         restart: true
+      fibonacci-worker:
+        condition: service_started
+        restart: true
     expose:
       - "5555"
     ports:
@@ -66,6 +72,9 @@ services:
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
       zookeeper:
+        condition: service_started
+        restart: true
+      fibonacci-worker:
         condition: service_started
         restart: true
     expose:

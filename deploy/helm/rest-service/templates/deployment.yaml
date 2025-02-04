@@ -22,7 +22,7 @@ spec:
             - "java"
             - "-cp"
             - "/app/conf:/app/uber.jar"
-            - "-Dconfig.file=/app/conf/rest-service.conf"
+            - "-Dconfig.path=/app/conf/rest-service.conf"
             - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
             - "com.github.moonkev.vertx_playground.MainKt"
           ports:

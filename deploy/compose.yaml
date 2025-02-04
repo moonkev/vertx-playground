@@ -9,7 +9,7 @@ services:
       - "java"
       - "-cp"
       - "/app/conf:/app/uber.jar"
-      - "-Dconfig.file=/app/conf/fibonacci-worker.conf"
+      - "-Dconfig.path=/app/conf/fibonacci-worker.conf"
       - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
@@ -27,7 +27,7 @@ services:
       - "java"
       - "-cp"
       - "/app/conf:/app/uber.jar"
-      - "-Dconfig.file=/app/conf/rest-service.conf"
+      - "-Dconfig.path=/app/conf/rest-service.conf"
       - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
@@ -47,7 +47,7 @@ services:
       - "java"
       - "-cp"
       - "/app/conf:/app/uber.jar"
-      - "-Dconfig.file=/app/conf/graphql-service.conf"
+      - "-Dconfig.path=/app/conf/graphql-service.conf"
       - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
@@ -67,7 +67,7 @@ services:
       - "java"
       - "-cp"
       - "/app/conf:/app/uber.jar"
-      - "-Dconfig.file=/app/conf/grpc-service.conf"
+      - "-Dconfig.path=/app/conf/grpc-service.conf"
       - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
@@ -85,7 +85,7 @@ services:
       - "java"
       - "-cp"
       - "/app/conf:/app/uber.jar"
-      - "-Dconfig.file=/app/conf/fibonacci-bot.conf"
+      - "-Dconfig.path=/app/conf/fibonacci-bot.conf"
       - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:

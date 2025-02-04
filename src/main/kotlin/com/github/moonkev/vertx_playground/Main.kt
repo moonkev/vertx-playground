@@ -13,8 +13,6 @@ import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.core.vertxOptionsOf
 import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager
-import kotlin.system.exitProcess
-
 
 fun main() {
 
@@ -30,14 +28,30 @@ fun main() {
     Vertx.builder().with(vertxOptions).withClusterManager(ZookeeperClusterManager()).buildClustered()
         .onComplete { res -> res.result() }
         .flatMap { vertx ->
-            val hoconFileStore = configStoreOptionsOf(
-                type = "file",
-                format = "hocon",
-                config = json { obj("path" to System.getProperty("config.file", "application.conf")) }
-            )
-            ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(hoconFileStore)).config.flatMap { config ->
+            val configType = System.getProperty("config.type", "file")
+            val configStore = when (configType) {
+                "http" -> configStoreOptionsOf(
+                    type = "http",
+                    format = System.getProperty("config.format", "hocon"),
+                    config = json {
+                        obj(
+                            "host" to System.getProperty("config.host", "localhost"),
+                            "port" to Integer.getInteger("config.port", 8080),
+                            "path" to System.getProperty("config.path", "application.conf")
+                        )
+                    }
+                )
+
+                else -> configStoreOptionsOf(
+                    type = "file",
+                    format = System.getProperty("config.format", "hocon"),
+                    config = json { obj("path" to System.getProperty("config.path", "application.conf")) }
+                )
+            }
+            ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(configStore)).config.flatMap { config ->
                 DeploymentOptions()
-                val deploymentOptions = deploymentOptionsOf(config = config, threadingModel = ThreadingModel.VIRTUAL_THREAD)
+                val deploymentOptions =
+                    deploymentOptionsOf(config = config, threadingModel = ThreadingModel.VIRTUAL_THREAD)
                 vertx.deployVerticle(config.getString("verticle-name"), deploymentOptions)
             }
                 .onSuccess { verticleId ->

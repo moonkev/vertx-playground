@@ -1,27 +1,52 @@
-# Helm Charts
+# Deployment 
 
-## Overview
+## Docker compose
 
-Helm is a package manager for Kubernetes that simplifies the deployment and management of applications. It allows you to define, install, and upgrade Kubernetes applications through reusable YAML templates. Helm provides the ability to manage application charts, which are collections of pre-configured Kubernetes resources.
+If you do not have a kubernetes cluster available and do not wish to set one up, you can run the application using
+docker compose.
 
-### Benefits of Using Helm
+simply install the image using the `build.sh` script, or manually build the uber jar and install the image.  The following
+can be used from Linux/Mac from the repository root -
 
-- **Simplified Deployment**: Helm charts encapsulate all necessary Kubernetes configurations for your application, making it easy to deploy with a single command.
-- **Reusability**: Helm charts can be reused and shared across multiple projects or teams, allowing for consistent application deployment.
-- **Version Control**: Helm supports versioned charts, making it easy to roll back to previous versions or update applications.
-- **Parameterization**: Helm charts can be customized using values files or command-line parameters, allowing for flexible application deployments in different environments.
+```bash
+./gradlew build
+docker build -f deploy/Dockerfile -t moonkev/vertx_playground:1.0 .
+```
 
----
+After installing the image, simple run `docker compose up` from the `/deploy` directory
 
-## Install `helm`
+## Kubernetes with helm
+
+The application can be deployed to a kubernetes cluster using supplied helm charts located in the `/deploy/helm` directory.
+The following instrucions detail how to get a k8s cluster running and to deploy using helm.
+
+### install and run `minikube`
+
+While any kubernetes cluster should suffice, this was tested using minikube, which installs a full running k8s
+cluster that runs on a single machine.
+
+See [Minikube Getting Started](https://minikube.sigs.k8s.io/docs/start/?arch=%2Flinux%2Fx86-64%2Fstable%2Fbinary+download)
+
+Once minikube is installed, you will want to install the container into minikube's docker repository as it will not
+pull container images from a local running docker normally (it can be configured to, but I will not recommend that here).
+You can either run the `build-minikube.sh` script located in the deploy directory or you can manually build the uber
+jar and run the commands.  The following will work on Linux/Mac if run from the repository root -
+
+```bash
+./gradlew build
+eval $(minikube -p minikube docker-env)
+docker build -f deploy/Dockerfile -t moonkev/vertx_playground:1.0 .
+```
+
+### Install `helm`
 
 See [Installing Helm](https://helm.sh/docs/intro/install/)
 
-## Basic Helm Commands
+#### Basic Helm Commands
 
 See [Helm notebook](../tests/notebooks/helm.ipynb) for demonstration of commands
 
-### 1. Install a Chart
+##### 1. Install a Chart
 
 To install a chart into your Kubernetes cluster:
 
@@ -37,7 +62,7 @@ Example:
 helm install fibonacci-worker ./fibonacci-worker --namespace vertx-playground
 ```
 
-### 2. Unstall a Release
+##### 2. Unstall a Release
 
 To uninstall (delete) a release:
 
@@ -53,7 +78,7 @@ Example:
 helm uninstall fibonacci-worker 
 ```
 
-### 3. Upgrade a Release
+##### 3. Upgrade a Release
 
 To upgrade an existing release
 
@@ -61,7 +86,7 @@ To upgrade an existing release
 helm upgrade fibonacci-worker
 ```
 
-### 4. Install or Upgrade a Release (`upgrade --install`)
+##### 4. Install or Upgrade a Release (`upgrade --install`)
 
 If you want to ensure the Helm installs the release if it doesn't exist, or upgrade it if it does (very useful)
 
@@ -83,7 +108,7 @@ Or in a namespace
 helm upgrade --install fibonacci-worker ./fibonacci-worker --namespace vertx-playground
 ```
 
-### 5. List Installed Releases
+##### 5. List Installed Releases
 
 To list all installed Helm releases:
 
@@ -97,7 +122,7 @@ Or for a specific namespace
 helm list --namespace vertx-playground
 ```
 
-### 6. Rollback a Release
+##### 6. Rollback a Release
 
 If you need to rollback to a previous release version:
 
@@ -113,7 +138,7 @@ helm rollback fibonacci-worker 1
 
 ---
 
-## Install the 'umbrella` chart
+##### Install the 'umbrella` chart
 
 To install everything currently configured in **vertx-playground**
 
@@ -124,7 +149,7 @@ It will create the namespace if it doesn't exist.
 helm install vertx-playground-full ./vertx-playground-full -n vertx-playground --create-namespace
 ```
 
-### Install and set parameters for `fibonacci-worker`
+##### Install and set parameters for `fibonacci-worker`
 
 This will set the image *version* to use as **latest**, and the *trainSize* to **500**
 
@@ -134,7 +159,7 @@ helm install vertx-playground-full ./vertx-playground-full -n vertx-playground -
 
 ---
 
-## Updating Dependencies for the full chart
+##### Updating Dependencies for the full chart
 
 If you modify any of the sub charts, you'll need to update the dependencies for the `vertx-playground-full` chart
 

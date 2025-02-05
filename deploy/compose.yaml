@@ -40,7 +40,7 @@ services:
     expose:
       - "5555"
     ports:
-      - "28080:8080"
+      - "18080:8080"
   graphql-service:
     image: moonkev/vertx_playground:1.0
     command:
@@ -60,7 +60,7 @@ services:
     expose:
       - "5555"
     ports:
-      - "38080:8080"
+      - "28080:8080"
   grpc-service:
     image: moonkev/vertx_playground:1.0
     command:
@@ -79,6 +79,8 @@ services:
         restart: true
     expose:
       - "5555"
+    ports:
+      - "38080:8080"
   fibonacci-bot:
     image: moonkev/vertx_playground:1.0
     command:

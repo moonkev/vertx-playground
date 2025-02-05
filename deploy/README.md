@@ -13,7 +13,13 @@ can be used from Linux/Mac from the repository root -
 docker build -f deploy/Dockerfile -t moonkev/vertx_playground:1.0 .
 ```
 
-After installing the image, simple run `docker compose up` from the `/deploy` directory
+After installing the image, simple run `docker compose up` from the `/deploy` directory.  The compose file exposes
+the service apps on the following ports on your host machine so that you can access the services from apps 
+outside of docker -
+
+1) rest-service: 18080
+2) graphql-service: 28080
+3) grpc-service: 38080
 
 ## Kubernetes with helm
 

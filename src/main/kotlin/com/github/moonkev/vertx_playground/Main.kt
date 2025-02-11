@@ -20,8 +20,8 @@ fun main() {
 
     val vertxOptions = vertxOptionsOf(
         eventBusOptions = eventBusOptionsOf(
-            host = System.getProperty("vertx.eventbus.host"),
-            port = Integer.getInteger("vertx.eventbus.port")
+            host = System.getProperty("vertx.eventbus.host", "localhost"),
+            port = Integer.getInteger("vertx.eventbus.port", 0)
         )
     )
 

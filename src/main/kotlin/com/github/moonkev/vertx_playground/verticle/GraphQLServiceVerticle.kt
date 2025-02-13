@@ -5,19 +5,25 @@ import com.github.moonkev.math.v1.FibonacciResponse
 import com.github.moonkev.vertx_playground.codec.FibonacciRequestCodec
 import com.github.moonkev.vertx_playground.codec.FibonacciResponseCodec
 import graphql.GraphQL
+import graphql.execution.SubscriptionExecutionStrategy
 import graphql.schema.DataFetchingEnvironment
 import graphql.schema.idl.RuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.reactivex.rxjava3.core.Flowable
 import io.vertx.core.Future
 import io.vertx.core.Promise
 import io.vertx.core.VerticleBase
 import io.vertx.core.eventbus.Message
 import io.vertx.core.http.HttpServer
+import io.vertx.core.http.HttpServerOptions
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
+import io.vertx.ext.web.handler.graphql.ws.GraphQLWSHandler
+import org.reactivestreams.Publisher
+import javax.xml.crypto.Data
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.nanoseconds
 
@@ -30,6 +36,10 @@ class GraphQLServiceVerticle : VerticleBase() {
             type Query { 
                 fibonacci(n: Int!): Int! 
                 fibonacciLoadTest(n: Int!, count: Int!): String!
+                
+            }
+            type Subscription {
+                fibonacciSequence(n: Int!): Int!
             }
         """.trimIndent()
     }
@@ -44,6 +54,12 @@ class GraphQLServiceVerticle : VerticleBase() {
         val schemaParser = SchemaParser()
         val typeRegistry = schemaParser.parse(SCHEMA)
         val runtimeWiring = RuntimeWiring.newRuntimeWiring()
+            .type("Subscription") { builder ->
+                builder.dataFetcher("fibonacciSequence") { env: DataFetchingEnvironment ->
+                    val n: Int = env.getArgumentOrDefault("n", 0)
+                    Flowable.fromIterable(0..n)
+                }
+            }
             .type("Query") { builder ->
                 builder.dataFetcher("fibonacci") { env: DataFetchingEnvironment ->
                     val n: Int = env.getArgumentOrDefault("n", 0)
@@ -86,8 +102,8 @@ class GraphQLServiceVerticle : VerticleBase() {
 
                     Future.all<Message<FibonacciResponse>>(eventFutures)
                         .map { vs ->
-                            val totalExecTime = vs.list<Message<FibonacciResponse>>().fold(0L) {
-                                acc, res -> acc + res.body().executionNanos
+                            val totalExecTime = vs.list<Message<FibonacciResponse>>().fold(0L) { acc, res ->
+                                acc + res.body().executionNanos
                             }
                             val averageTime = (totalExecTime.toDouble() / count).nanoseconds
                             val completionTime = (System.currentTimeMillis() - now).milliseconds
@@ -99,14 +115,15 @@ class GraphQLServiceVerticle : VerticleBase() {
             .build()
 
         val graphqlSchema = SchemaGenerator().makeExecutableSchema(typeRegistry, runtimeWiring)
-        val graphql = GraphQL.newGraphQL(graphqlSchema).build()
+        val graphql = GraphQL.newGraphQL(graphqlSchema).subscriptionExecutionStrategy(SubscriptionExecutionStrategy()).build()
         val router = Router.router(vertx)
 
         router.post().handler(BodyHandler.create())
-        router.route("/graphql").handler(GraphQLHandler.create(graphql))
+        router.route("/graphql").handler(GraphQLWSHandler.create(graphql))
+        val httpServerOptions = HttpServerOptions().addWebSocketSubProtocol("graphql-transport-ws")
 
         return vertx
-            .createHttpServer()
+            .createHttpServer(httpServerOptions)
             .requestHandler(router)
             .listen(config().getInteger("port")).onSuccess { server ->
                 logger.info { "GraphQL HTTP server started on port  ${server.actualPort()}" }

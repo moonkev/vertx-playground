@@ -60,6 +60,7 @@ dependencies {
   implementation("io.vertx:vertx-config-hocon")
   implementation("io.vertx:vertx-grpc-client")
   implementation("io.vertx:vertx-grpc-server")
+  implementation("io.vertx:vertx-infinispan")
   implementation("io.vertx:vertx-lang-kotlin")
   implementation("io.vertx:vertx-lang-kotlin-coroutines")
   implementation("io.vertx:vertx-launcher-application")

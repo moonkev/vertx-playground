@@ -3,6 +3,9 @@ image:
   repository: "moonkev/vertx_playground"
   tag: "1.0"
   pullPolicy: Never
+mainclass: MainInfinispanKt
+jgroups:
+  port: 7800
 cluster:
   port: 5555
 service:

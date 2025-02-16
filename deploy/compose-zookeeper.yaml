@@ -1,0 +1,114 @@
+name: vertx_playground
+
+services:
+  zookeeper:
+    image: zookeeper:latest
+
+  fibonacci-worker:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.path=/app/conf/fibonacci-worker.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    deploy:
+      mode: replicated
+      replicas: 6
+
+  rest-service:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.path=/app/conf/rest-service.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+      grpc-service:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    ports:
+      - "18080:8080"
+
+  graphql-service:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.path=/app/conf/graphql-service.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+      fibonacci-worker:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    ports:
+      - "28080:8080"
+
+  grpc-service:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.path=/app/conf/grpc-service.conf"
+      - "-Dvertx.eventbus.port=5555"
+      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+
+    healthcheck:
+      test: "/bin/curl -f http://localhost:8080/health"
+      start_period: 5s
+      interval: 15s
+      timeout: 15s
+      retries: 2
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+      fibonacci-worker:
+        condition: service_started
+        restart: true
+    expose:
+      - "5555"
+    ports:
+      - "38080:8080"
+
+  fibonacci-bot:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "-Dconfig.path=/app/conf/fibonacci-bot.conf"
+      - "com.github.moonkev.vertx_playground.MainKt"
+    depends_on:
+      zookeeper:
+        condition: service_started
+        restart: true
+      grpc-service:
+        condition: service_healthy
+        restart: true
+    deploy:
+      mode: replicated
+      replicas: 3
+

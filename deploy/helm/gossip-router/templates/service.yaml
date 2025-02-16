@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: gossip-router
+spec:
+  selector:
+    app: gossip-router
+  ports:
+    - protocol: TCP
+      port: {{ .Values.gossip.port }}
+      targetPort: {{ .Values.gossip.port }}

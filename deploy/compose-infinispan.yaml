@@ -1,8 +1,20 @@
 name: vertx_playground
 
 services:
-  zookeeper:
-    image: zookeeper:latest
+  gossip-router:
+    image: moonkev/vertx_playground:1.0
+    command:
+      - "java"
+      - "-cp"
+      - "/app/conf:/app/uber.jar"
+      - "org.jgroups.stack.GossipRouter"
+      - "-bindaddress"
+      - "0.0.0.0"
+      - "-port"
+      - "7000"
+    expose:
+      - "7000"
+
   fibonacci-worker:
     image: moonkev/vertx_playground:1.0
     command:
@@ -11,16 +23,18 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/fibonacci-worker.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainKt"
+      - "com.github.moonkev.vertx_playground.MainInfinispanKt"
     depends_on:
-      zookeeper:
+      gossip-router:
         condition: service_started
         restart: true
     expose:
       - "5555"
+      - "7800"
     deploy:
       mode: replicated
       replicas: 6
+
   rest-service:
     image: moonkev/vertx_playground:1.0
     command:
@@ -29,9 +43,9 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/rest-service.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainKt"
+      - "com.github.moonkev.vertx_playground.MainInfinispanKt"
     depends_on:
-      zookeeper:
+      gossip-router:
         condition: service_started
         restart: true
       grpc-service:
@@ -39,8 +53,10 @@ services:
         restart: true
     expose:
       - "5555"
+      - "7800"
     ports:
       - "18080:8080"
+
   graphql-service:
     image: moonkev/vertx_playground:1.0
     command:
@@ -49,9 +65,9 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/graphql-service.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainKt"
+      - "com.github.moonkev.vertx_playground.MainInfinispanKt"
     depends_on:
-      zookeeper:
+      gossip-router:
         condition: service_started
         restart: true
       fibonacci-worker:
@@ -59,8 +75,10 @@ services:
         restart: true
     expose:
       - "5555"
+      - "7800"
     ports:
       - "28080:8080"
+
   grpc-service:
     image: moonkev/vertx_playground:1.0
     command:
@@ -69,9 +87,15 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/grpc-service.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainKt"
+      - "com.github.moonkev.vertx_playground.MainInfinispanKt"
+    healthcheck:
+      test: "/bin/curl -f http://localhost:8080/health"
+      start_period: 5s
+      interval: 15s
+      timeout: 15s
+      retries: 2
     depends_on:
-      zookeeper:
+      gossip-router:
         condition: service_started
         restart: true
       fibonacci-worker:
@@ -79,8 +103,10 @@ services:
         restart: true
     expose:
       - "5555"
+      - "7800"
     ports:
       - "38080:8080"
+
   fibonacci-bot:
     image: moonkev/vertx_playground:1.0
     command:
@@ -88,17 +114,14 @@ services:
       - "-cp"
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/fibonacci-bot.conf"
-      - "-Dvertx.eventbus.port=5555"
       - "com.github.moonkev.vertx_playground.MainKt"
     depends_on:
-      zookeeper:
+      gossip-router:
         condition: service_started
         restart: true
       grpc-service:
-        condition: service_started
+        condition: service_healthy
         restart: true
-    expose:
-      - "5555"
     deploy:
       mode: replicated
       replicas: 3

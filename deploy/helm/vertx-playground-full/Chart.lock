@@ -1,6 +1,6 @@
 dependencies:
-- name: zookeeper
-  repository: file://../zookeeper
+- name: gossip-router
+  repository: file://../gossip-router
   version: 0.1.0
 - name: fibonacci-worker
   repository: file://../fibonacci-worker
@@ -17,5 +17,5 @@ dependencies:
 - name: fibonacci-bot
   repository: file://../fibonacci-bot
   version: 0.1.0
-digest: sha256:049f9bb9f67fc54f83edb21c6942592701d971f450d2e8a7cbf1b230282fff48
-generated: "2025-01-31T15:43:51.814186586-06:00"
+digest: sha256:191ccb21814c429432af85e5f3125d45baec8f50acf760b335766c81447127aa
+generated: "2025-02-16T11:37:05.307380206-06:00"

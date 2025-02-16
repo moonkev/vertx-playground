@@ -1,7 +1,0 @@
-replicaCount: 1
-image:
-  repository: zookeeper
-  tag: "3.8.4"
-  pullPolicy: IfNotPresent
-service:
-  port: 2181

@@ -4,9 +4,9 @@ description: An umbrella chart for managing all vertx-playground services
 version: 0.1.0
 
 dependencies:
-  - name: zookeeper
+  - name: gossip-router
     version: "0.1.0"
-    repository: "file://../zookeeper"
+    repository: "file://../gossip-router"
   - name: fibonacci-worker
     version: "0.1.0"
     repository: "file://../fibonacci-worker"

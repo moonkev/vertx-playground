@@ -1,30 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fibonacci-bot
+  name: gossip-router
   labels:
-    app: fibonacci-bot
+    app: gossip-router
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: fibonacci-bot
+      app: gossip-router
   template:
     metadata:
       labels:
-        app: fibonacci-bot
+        app: gossip-router
     spec:
       containers:
-        - name: fibonacci-bot
+        - name: gossip-router
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - "java"
             - "-cp"
             - "/app/conf:/app/uber.jar"
-            - "-Dconfig.path=/app/conf/fibonacci-bot.conf"
-            - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
-            - "com.github.moonkev.vertx_playground.{{ .Values.mainclass }}"
+            - "org.jgroups.stack.GossipRouter"
+            - "-bindaddress"
+            - "0.0.0.0"
+            - "-port"
+            - "{{ .Values.gossip.port }}"
           ports:
-            - containerPort: {{ .Values.cluster.port }}
+            - containerPort: {{ .Values.gossip.port }}
               protocol: TCP

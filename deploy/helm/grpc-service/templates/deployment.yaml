@@ -24,8 +24,10 @@ spec:
             - "/app/conf:/app/uber.jar"
             - "-Dconfig.path=/app/conf/grpc-service.conf"
             - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
-            - "com.github.moonkev.vertx_playground.MainKt"
+            - "com.github.moonkev.vertx_playground.{{ .Values.mainclass }}"
           ports:
+            - containerPort: {{ .Values.jgroups.port }}
+              protocol: TCP
             - containerPort: {{ .Values.cluster.port }}
               protocol: TCP
             - containerPort: {{ .Values.service.port }}

@@ -119,7 +119,8 @@ class GraphQLServiceVerticle : VerticleBase() {
         val router = Router.router(vertx)
 
         router.post().handler(BodyHandler.create())
-        router.route("/graphql").handler(GraphQLWSHandler.create(graphql))
+        router.route("/graphql").handler(GraphQLHandler.create(graphql))
+        router.route("/graphql-ws").handler(GraphQLWSHandler.create(graphql))
         val httpServerOptions = HttpServerOptions().addWebSocketSubProtocol("graphql-transport-ws")
 
         return vertx
@@ -128,5 +129,9 @@ class GraphQLServiceVerticle : VerticleBase() {
             .listen(config().getInteger("port")).onSuccess { server ->
                 logger.info { "GraphQL HTTP server started on port  ${server.actualPort()}" }
             }
+    }
+
+    override fun stop(): Future<*> {
+        return super.stop()
     }
 }

@@ -13,13 +13,14 @@ import kotlin.random.Random
 
 class FibonacciBotVerticle : VerticleBase() {
 
-    val logger = KotlinLogging.logger { }
+    private val logger = KotlinLogging.logger { }
+
     override fun start(): Future<*> {
         val client = GrpcClient.client(vertx)
         val grpcConfig: JsonObject = config()["math-grpc-service"]
         val maxN = config().getInteger("max-n", 10)
-        val interval = config().getLong("spam-interval", 50)
-        val spamLogThreshold = config().getInteger("spam-log-threshold", 100)
+        val interval = config().getLong("spam-interval", 100)
+        val spamLogThreshold = config().getInteger("spam-log-threshold", 50)
         val mathGrpcServer = SocketAddress.inetSocketAddress(grpcConfig["port"], grpcConfig["host"])
 
         return client

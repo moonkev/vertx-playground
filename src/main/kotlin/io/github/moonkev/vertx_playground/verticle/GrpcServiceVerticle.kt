@@ -1,10 +1,10 @@
-package com.github.moonkev.vertx_playground.verticle
+package io.github.moonkev.vertx_playground.verticle
 
-import com.github.moonkev.math.v1.FibonacciRequest
-import com.github.moonkev.math.v1.FibonacciResponse
-import com.github.moonkev.math.v1.VertxMathGrpcServer
-import com.github.moonkev.vertx_playground.codec.FibonacciRequestCodec
-import com.github.moonkev.vertx_playground.codec.FibonacciResponseCodec
+import io.github.moonkev.math.v1.FibonacciRequest
+import io.github.moonkev.math.v1.FibonacciResponse
+import io.github.moonkev.math.v1.VertxMathGrpcServer
+import io.github.moonkev.vertx_playground.codec.FibonacciRequestCodec
+import io.github.moonkev.vertx_playground.codec.FibonacciResponseCodec
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.core.Future
 import io.vertx.core.VerticleBase

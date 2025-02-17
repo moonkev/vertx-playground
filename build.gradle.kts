@@ -13,7 +13,7 @@ plugins {
   id("com.google.protobuf") version "0.9.4"
 }
 
-group = "com.github.moonkev"
+group = "io.github.moonkev"
 version = "1.0.0-SNAPSHOT"
 
 repositories {

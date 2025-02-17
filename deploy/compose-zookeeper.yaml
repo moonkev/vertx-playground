@@ -12,7 +12,7 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/fibonacci-worker.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+      - "io.github.moonkev.vertx_playground.MainZookeeperKt"
     depends_on:
       zookeeper:
         condition: service_started
@@ -31,7 +31,7 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/rest-service.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+      - "io.github.moonkev.vertx_playground.MainZookeeperKt"
     depends_on:
       zookeeper:
         condition: service_started
@@ -52,7 +52,7 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/graphql-service.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+      - "io.github.moonkev.vertx_playground.MainZookeeperKt"
     depends_on:
       zookeeper:
         condition: service_started
@@ -73,7 +73,7 @@ services:
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/grpc-service.conf"
       - "-Dvertx.eventbus.port=5555"
-      - "com.github.moonkev.vertx_playground.MainZookeeperKt"
+      - "io.github.moonkev.vertx_playground.MainZookeeperKt"
 
     healthcheck:
       test: "/bin/curl -f http://localhost:8080/health"
@@ -100,7 +100,7 @@ services:
       - "-cp"
       - "/app/conf:/app/uber.jar"
       - "-Dconfig.path=/app/conf/fibonacci-bot.conf"
-      - "com.github.moonkev.vertx_playground.MainKt"
+      - "io.github.moonkev.vertx_playground.MainKt"
     depends_on:
       zookeeper:
         condition: service_started

@@ -9,7 +9,7 @@
     <appender-ref ref="STDOUT" />
   </root>
 
-  <logger name="com.github.moonkev" level="info" />
+  <logger name="io.github.moonkev" level="info" />
 <!--  <logger name="org.jgroups" level="debug" />-->
 <!--  <logger name="org.infinispan" level="debug" />-->
 </configuration>

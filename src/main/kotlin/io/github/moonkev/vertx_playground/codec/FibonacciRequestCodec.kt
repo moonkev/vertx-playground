@@ -1,6 +1,6 @@
-package com.github.moonkev.vertx_playground.codec
+package io.github.moonkev.vertx_playground.codec
 
-import com.github.moonkev.math.v1.FibonacciRequest
+import io.github.moonkev.math.v1.FibonacciRequest
 import io.vertx.core.buffer.Buffer
 import io.vertx.core.buffer.impl.BufferImpl
 import io.vertx.core.eventbus.MessageCodec

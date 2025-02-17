@@ -1,4 +1,4 @@
-package com.github.moonkev.vertx_playground.verticle
+package io.github.moonkev.vertx_playground.verticle
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.core.Future

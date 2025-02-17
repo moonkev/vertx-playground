@@ -1,7 +1,7 @@
-package com.github.moonkev.vertx_playground.verticle
+package io.github.moonkev.vertx_playground.verticle
 
-import com.github.moonkev.math.v1.FibonacciRequest
-import com.github.moonkev.math.v1.VertxMathGrpcClient
+import io.github.moonkev.math.v1.FibonacciRequest
+import io.github.moonkev.math.v1.VertxMathGrpcClient
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.core.Future
 import io.vertx.core.VerticleBase

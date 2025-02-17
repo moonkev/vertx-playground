@@ -1,4 +1,4 @@
-package com.github.moonkev.vertx_playground
+package io.github.moonkev.vertx_playground
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.config.ConfigRetriever
@@ -6,13 +6,13 @@ import io.vertx.config.ConfigRetrieverOptions
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.ThreadingModel
 import io.vertx.core.Vertx
-import io.vertx.ext.cluster.infinispan.InfinispanClusterManager
 import io.vertx.kotlin.config.configStoreOptionsOf
 import io.vertx.kotlin.core.deploymentOptionsOf
 import io.vertx.kotlin.core.eventbus.eventBusOptionsOf
 import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.core.vertxOptionsOf
+import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager
 
 fun main() {
 
@@ -25,7 +25,7 @@ fun main() {
         )
     )
 
-    Vertx.builder().with(vertxOptions).withClusterManager(InfinispanClusterManager()).buildClustered()
+    Vertx.builder().with(vertxOptions).withClusterManager(ZookeeperClusterManager()).buildClustered()
         .onComplete { res -> res.result() }
         .flatMap { vertx ->
             val configType = System.getProperty("config.type", "file")

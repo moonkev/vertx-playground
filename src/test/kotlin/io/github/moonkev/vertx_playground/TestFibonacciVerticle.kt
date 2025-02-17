@@ -1,6 +1,6 @@
-package com.github.moonkev.vertx_playground
+package io.github.moonkev.vertx_playground
 
-import com.github.moonkev.vertx_playground.verticle.FibonacciWorkerVerticle
+import io.github.moonkev.vertx_playground.verticle.FibonacciWorkerVerticle
 import io.vertx.core.Vertx
 import io.vertx.junit5.VertxExtension
 import io.vertx.junit5.VertxTestContext
@@ -13,7 +13,7 @@ class TestFibonacciVerticle {
 
   @BeforeEach
   fun deploy_verticle(vertx: Vertx, testContext: VertxTestContext) {
-    vertx.deployVerticle(FibonacciWorkerVerticle())
+    vertx.deployVerticle(io.github.moonkev.vertx_playground.verticle.FibonacciWorkerVerticle())
       .onComplete(testContext.succeeding { _ -> testContext.completeNow() })
   }
 

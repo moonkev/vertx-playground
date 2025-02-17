@@ -1,4 +1,4 @@
-package com.github.moonkev.vertx_playground
+package io.github.moonkev.vertx_playground
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.vertx.config.ConfigRetriever

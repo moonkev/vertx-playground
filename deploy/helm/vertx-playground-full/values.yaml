@@ -1,3 +1,7 @@
+infinispan:
+  deploy:
+    replicas: 3
+
 gossip-router:
   replicaCount: 6
   image:

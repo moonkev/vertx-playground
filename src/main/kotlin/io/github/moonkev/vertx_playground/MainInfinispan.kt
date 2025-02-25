@@ -49,7 +49,6 @@ fun main() {
                 )
             }
             ConfigRetriever.create(vertx, ConfigRetrieverOptions().addStore(configStore)).config.flatMap { config ->
-                DeploymentOptions()
                 val deploymentOptions =
                     deploymentOptionsOf(config = config, threadingModel = ThreadingModel.VIRTUAL_THREAD)
                 vertx.deployVerticle(config.getString("verticle-name"), deploymentOptions)

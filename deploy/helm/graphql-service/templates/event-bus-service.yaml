@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: graphql-service
+  name: graphql-service-event-buss
 spec:
   selector:
     app: graphql-service
@@ -10,7 +10,3 @@ spec:
       protocol: TCP
       port: {{ .Values.cluster.port }}
       targetPort: {{ .Values.cluster.port }}
-    - name: "graphql"
-      protocol: TCP
-      port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.port }}

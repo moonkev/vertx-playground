@@ -14,10 +14,19 @@ spec:
       labels:
         app: grpc-service
     spec:
+      initContainers:
+        - name: wait-for-gossip-router
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z gossip-router 7000; do echo waiting for gossip router; sleep 2; done;"
+            ]
       containers:
         - name: grpc-service
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.global.vertx_playground.image.repository | default .Values.image.repository }}:{{ .Values.global.vertx_playground.image.tag | default .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.global.vertx_playground.image.pullPolicy | default .Values.image.pullPolicy }}
           command:
             - "java"
             - "-cp"
@@ -33,3 +42,13 @@ spec:
               protocol: TCP
             - containerPort: {{ .Values.service.port }}
               protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10

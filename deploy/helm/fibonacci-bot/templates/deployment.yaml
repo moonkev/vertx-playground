@@ -14,10 +14,27 @@ spec:
       labels:
         app: fibonacci-bot
     spec:
+      initContainers:
+        - name: wait-for-gossip-router
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z gossip-router 7000; do echo waiting for gossip router; sleep 2; done;"
+            ]
+        - name: wait-for-grpc-server
+          image: busybox
+          command:
+            [
+              "sh",
+              "-c",
+              "until nc -z grpc-service 8080; do echo waiting for grpc service; sleep 2; done;"
+            ]
       containers:
         - name: fibonacci-bot
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          image: "{{ .Values.global.vertx_playground.image.repository | default .Values.image.repository }}:{{ .Values.global.vertx_playground.image.tag | default .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.global.vertx_playground.image.pullPolicy | default .Values.image.pullPolicy }}
           command:
             - "java"
             - "-cp"

@@ -8,5 +8,6 @@ cluster:
   port: 5555
 service:
   port: 8080
+  nodePort: 32620
 jgroups:
   port: 7800

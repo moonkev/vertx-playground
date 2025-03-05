@@ -1,72 +1,31 @@
-infinispan:
-  deploy:
-    replicas: 3
+global:
+  vertx_playground:
+    image:
+      repository: "moonkev/vertx_playground"
+      tag: "latest"
+      pullPolicy: Never
 
 gossip-router:
-  replicaCount: 6
-  image:
-    repository: "phantom.sol.lan:5000/moonkev/vertx_playground"
-    tag: "latest"
-    pullPolicy: Always
+  replicaCount: 1
   gossip:
     port: 7000
 
 fibonacci-bot:
   replicaCount: 1
-  image:
-    repository: "phantom.sol.lan:5000/moonkev/vertx_playground"
-    tag: "latest"
-    pullPolicy: Always
   mainclass: MainKt
   cluster:
     port: 5555
 
 fibonacci-worker:
   replicaCount: 10
-  image:
-    repository: "phantom.sol.lan:5000/moonkev/vertx_playground"
-    tag: "latest"
-    pullPolicy: Always
   mainclass: MainInfinispanKt
   jgroups:
     port: 7800
   cluster:
     port: 5555
-
-graphql-service:
-  replicaCount: 2
-  image:
-    repository: "phantom.sol.lan:5000/moonkev/vertx_playground"
-    tag: "latest"
-    pullPolicy: Always
-  mainclass: MainInfinispanKt
-  jgroups:
-    port: 7800
-  cluster:
-    port: 5555
-  service:
-    port: 8080
-
-grpc-service:
-  replicaCount: 2
-  image:
-    repository: "phantom.sol.lan:5000/moonkev/vertx_playground"
-    tag: "latest"
-    pullPolicy: Always
-  mainclass: MainInfinispanKt
-  jgroups:
-    port: 7800
-  cluster:
-    port: 5555
-  service:
-    port: 8080
 
 rest-service:
   replicaCount: 2
-  image:
-    repository: "phantom.sol.lan:5000/moonkev/vertx_playground"
-    tag: "latest"
-    pullPolicy: Always
   mainclass: MainInfinispanKt
   jgroups:
     port: 7800
@@ -74,3 +33,27 @@ rest-service:
     port: 5555
   service:
     port: 8080
+    nodePort: 32630
+
+graphql-service:
+  replicaCount: 2
+  mainclass: MainInfinispanKt
+  jgroups:
+    port: 7800
+  cluster:
+    port: 5555
+  service:
+    port: 8080
+    nodePort: 32620
+
+grpc-service:
+  replicaCount: 2
+  mainclass: MainInfinispanKt
+  jgroups:
+    port: 7800
+  cluster:
+    port: 5555
+  service:
+    port: 8080
+    nodePort: 32630
+

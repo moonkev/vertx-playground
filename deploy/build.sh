@@ -2,4 +2,5 @@
 
 cd ..
 ./gradlew build
-docker build -f deploy/Dockerfile -t moonkev/vertx_playground:1.0 .
+docker build -f deploy/Dockerfile -t phantom.sol.lan:5000/moonkev/vertx_playground:latest .
+docker push phantom.sol.lan:5000/moonkev/vertx_playground:latest

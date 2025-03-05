@@ -1,7 +1,4 @@
 dependencies:
-- name: infinispan
-  repository: file://../infinispan
-  version: 0.5.0
 - name: gossip-router
   repository: file://../gossip-router
   version: 0.1.0
@@ -20,5 +17,5 @@ dependencies:
 - name: fibonacci-bot
   repository: file://../fibonacci-bot
   version: 0.1.0
-digest: sha256:ea7016fad105eae8c0e411f21061073ef8cd955d8fb0bdbb01ddc569142046ab
-generated: "2025-02-18T17:10:36.849623013-06:00"
+digest: sha256:191ccb21814c429432af85e5f3125d45baec8f50acf760b335766c81447127aa
+generated: "2025-03-04T15:48:01.883164946-06:00"

@@ -17,7 +17,7 @@ fibonacci-bot:
     port: 5555
 
 fibonacci-worker:
-  replicaCount: 10
+  replicaCount: 5
   mainclass: MainInfinispanKt
   jgroups:
     port: 7800
@@ -25,7 +25,7 @@ fibonacci-worker:
     port: 5555
 
 rest-service:
-  replicaCount: 2
+  replicaCount: 1
   mainclass: MainInfinispanKt
   jgroups:
     port: 7800
@@ -36,7 +36,7 @@ rest-service:
     nodePort: 32630
 
 graphql-service:
-  replicaCount: 2
+  replicaCount: 1
   mainclass: MainInfinispanKt
   jgroups:
     port: 7800
@@ -47,7 +47,7 @@ graphql-service:
     nodePort: 32620
 
 grpc-service:
-  replicaCount: 2
+  replicaCount: 1
   mainclass: MainInfinispanKt
   jgroups:
     port: 7800

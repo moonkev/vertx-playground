@@ -3,9 +3,9 @@ kind: Ingress
 metadata:
   name: graphql-ingress
 spec:
-  ingressClassName: nginx
+  ingressClassName: openshift-default
   rules:
-    - host: graphql.example
+    - host: graphql.vertx-playground.apps.okd.sol.lan
       http:
         paths:
           - path: /

@@ -8,7 +8,6 @@ import com.google.protobuf.gradle.*
 
 plugins {
   kotlin("jvm") version "2.0.0"
-  application
   id("com.gradleup.shadow") version "8.3.5"
   id("com.google.protobuf") version "0.9.4"
 }
@@ -30,22 +29,22 @@ sourceSets {
     runtimeClasspath += sourceSets.test.get().resources.sourceDirectories
   }
 }
-
-tasks.distTar.configure {
-  enabled = false
-}
-
-tasks.distZip.configure {
-  enabled = false
-}
+//
+//tasks.distTar.configure {
+//  enabled = false
+//}
+//
+//tasks.distZip.configure {
+//  enabled = false
+//}
 
 val vertxVersion = "5.0.0.CR4"
 val junitJupiterVersion = "5.9.1"
 val launcherClassName = "io.vertx.launcher.application.VertxApplication"
 
-application {
-  mainClass.set(launcherClassName)
-}
+//application {
+//  mainClass.set(launcherClassName)
+//}
 
 dependencies {
   implementation(platform("io.vertx:vertx-stack-depchain:$vertxVersion"))

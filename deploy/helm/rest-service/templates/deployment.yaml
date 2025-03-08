@@ -16,7 +16,7 @@ spec:
     spec:
       initContainers:
         - name: wait-for-gossip-router
-          image: busybox
+          image: {{ .Values.global.busybox.image | default "busybox" }}
           command:
             [
               "sh",
@@ -35,6 +35,13 @@ spec:
             - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
             - "-Dio.netty.allocator.centralQueueCapacity=2"
             - "io.github.moonkev.vertx_playground.{{ .Values.mainclass }}"
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "256Mi"
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
           ports:
             - containerPort: {{ .Values.jgroups.port }}
               protocol: TCP

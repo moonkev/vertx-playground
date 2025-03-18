@@ -24,8 +24,14 @@
          use_virtual_threads="${jgroups.thread.virtual,org.infinispan.threads.virtual:false}"
     />
     <RED/>
-
-    <TCPGOSSIP initial_hosts="gossip-router[7000]" />
+    <dns.DNS_PING
+            dns_query="${jgroups.dns_ping.dns_query:jgroups-cluster}"
+            async_discovery_use_separate_thread_per_request="true"
+            probe_transport_ports=""
+            num_discovery_runs="1"
+            dns_address=""
+            dns_record_type="SRV"/>
+<!--    <TCPGOSSIP initial_hosts="gossip-router[7000]" />-->
     <MERGE3 min_interval="10000"
             max_interval="30000"
     />

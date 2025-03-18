@@ -13,16 +13,8 @@ spec:
     metadata:
       labels:
         app: rest-service
+        deploymentConfig: jgrp
     spec:
-      initContainers:
-        - name: wait-for-gossip-router
-          image: {{ .Values.global.busybox.image | default "busybox" }}
-          command:
-            [
-              "sh",
-              "-c",
-              "until nc -z gossip-router 7000; do echo waiting for gossip router; sleep 2; done;"
-            ]
       containers:
         - name: rest-service
           image: "{{ .Values.global.vertx_playground.image.repository | default .Values.image.repository }}:{{ .Values.global.vertx_playground.image.tag | default .Values.image.tag }}"
@@ -33,6 +25,7 @@ spec:
             - "/app/conf:/app/uber.jar"
             - "-Dconfig.path=/app/conf/rest-service.conf"
             - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
+            - "-Djgroups.dns_ping.dns_query=_ping._tcp.jgrp.vertx-playground.svc.cluster.local"
             - "-Dio.netty.allocator.centralQueueCapacity=2"
             - "io.github.moonkev.vertx_playground.{{ .Values.mainclass }}"
           resources:

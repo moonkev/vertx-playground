@@ -4,9 +4,12 @@ description: An umbrella chart for managing all vertx-playground services
 version: 0.1.0
 
 dependencies:
-  - name: gossip-router
+  - name: jgroups
     version: "0.1.0"
-    repository: "file://../gossip-router"
+    repository: "file://../jgroups"
+  - name: network-tools
+    version: "0.1.0"
+    repository: "file://../network-tools"
   - name: fibonacci-worker
     version: "0.1.0"
     repository: "file://../fibonacci-worker"

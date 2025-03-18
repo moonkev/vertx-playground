@@ -1,39 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grpc-service
+  name: network-tools
   labels:
-    app: grpc-service
+    app: network-tools
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
-      app: grpc-service
+      app: network-tools
   template:
     metadata:
       labels:
-        app: grpc-service
+        app: network-tools
     spec:
       containers:
-        - name: grpc-service
-          image: "{{ .Values.global.image.repository | default .Values.image.repository }}:{{ .Values.global.image.tag | default .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.global.image.pullPolicy | default .Values.image.pullPolicy }}
+        - name: network-tools
+          image: "busybox:1.37.0-uclibc"
+          imagePullPolicy: "IfNotPresent"
           command:
-            - "java"
-            - "-cp"
-            - "/app/conf:/app/uber.jar"
-            - "-Dconfig.path=/app/conf/grpc-service.conf"
-            - "-Dvertx.eventbus.port={{ .Values.cluster.port }}"
-            - "-Dio.netty.allocator.centralQueueCapacity=2"
-            - "io.github.moonkev.vertx_playground.{{ .Values.mainclass }}"
+            - "nc"
+            - "-l"
           resources:
             limits:
-              memory: "{{ .Values.resources.limits.memory }}"
-              cpu: "{{ .Values.resources.limits.cpu }}"
-          ports:
-            - containerPort: {{ .Values.jgroups.port }}
-              protocol: TCP
-            - containerPort: {{ .Values.cluster.port }}
-              protocol: TCP
-            - containerPort: {{ .Values.service.port }}
-              protocol: TCP
+              cpu: "500m"
+              memory: "512Mi"
+            requests:
+              cpu: "100m"
+              memory: "64Mi"

@@ -5,11 +5,6 @@ global:
       tag: "latest"
       pullPolicy: Never
 
-gossip-router:
-  replicaCount: 1
-  gossip:
-    port: 7000
-
 fibonacci-bot:
   replicaCount: 1
   mainclass: MainKt

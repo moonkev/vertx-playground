@@ -1,6 +1,9 @@
 dependencies:
-- name: gossip-router
-  repository: file://../gossip-router
+- name: jgroups
+  repository: file://../jgroups
+  version: 0.1.0
+- name: network-tools
+  repository: file://../network-tools
   version: 0.1.0
 - name: fibonacci-worker
   repository: file://../fibonacci-worker
@@ -17,5 +20,5 @@ dependencies:
 - name: fibonacci-bot
   repository: file://../fibonacci-bot
   version: 0.1.0
-digest: sha256:191ccb21814c429432af85e5f3125d45baec8f50acf760b335766c81447127aa
-generated: "2025-03-04T15:48:01.883164946-06:00"
+digest: sha256:c07ede0017325492d57e7da7ed338b1af3f2dce0ca4e7798191ba31c0ebfb6ed
+generated: "2025-03-15T10:13:28.050836401-05:00"

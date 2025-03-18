@@ -1,19 +1,19 @@
 name: vertx_playground
 
 services:
-  gossip-router:
-    image: moonkev/vertx_playground:1.0
-    command:
-      - "java"
-      - "-cp"
-      - "/app/conf:/app/uber.jar"
-      - "org.jgroups.stack.GossipRouter"
-      - "-bindaddress"
-      - "0.0.0.0"
-      - "-port"
-      - "7000"
-    expose:
-      - "7000"
+#  gossip-router:
+#    image: moonkev/vertx_playground:1.0
+#    command:
+#      - "java"
+#      - "-cp"
+#      - "/app/conf:/app/uber.jar"
+#      - "org.jgroups.stack.GossipRouter"
+#      - "-bindaddress"
+#      - "0.0.0.0"
+#      - "-port"
+#      - "7000"
+#    expose:
+#      - "7000"
 
   fibonacci-worker:
     image: moonkev/vertx_playground:1.0
@@ -24,16 +24,16 @@ services:
       - "-Dconfig.path=/app/conf/fibonacci-worker.conf"
       - "-Dvertx.eventbus.port=5555"
       - "io.github.moonkev.vertx_playground.MainInfinispanKt"
-    depends_on:
-      gossip-router:
-        condition: service_started
-        restart: true
     expose:
       - "5555"
       - "7800"
     deploy:
       mode: replicated
       replicas: 6
+    networks:
+      default:
+        aliases:
+          - jgroups-cluster
 
   rest-service:
     image: moonkev/vertx_playground:1.0
@@ -45,9 +45,6 @@ services:
       - "-Dvertx.eventbus.port=5555"
       - "io.github.moonkev.vertx_playground.MainInfinispanKt"
     depends_on:
-      gossip-router:
-        condition: service_started
-        restart: true
       grpc-service:
         condition: service_started
         restart: true
@@ -56,6 +53,10 @@ services:
       - "7800"
     ports:
       - "18080:8080"
+    networks:
+      default:
+        aliases:
+          - jgroups-cluster
 
   graphql-service:
     image: moonkev/vertx_playground:1.0
@@ -67,9 +68,6 @@ services:
       - "-Dvertx.eventbus.port=5555"
       - "io.github.moonkev.vertx_playground.MainInfinispanKt"
     depends_on:
-      gossip-router:
-        condition: service_started
-        restart: true
       fibonacci-worker:
         condition: service_started
         restart: true
@@ -78,6 +76,10 @@ services:
       - "7800"
     ports:
       - "28080:8080"
+    networks:
+      default:
+        aliases:
+          - jgroups-cluster
 
   grpc-service:
     image: moonkev/vertx_playground:1.0
@@ -95,9 +97,6 @@ services:
       timeout: 15s
       retries: 2
     depends_on:
-      gossip-router:
-        condition: service_started
-        restart: true
       fibonacci-worker:
         condition: service_started
         restart: true
@@ -106,6 +105,10 @@ services:
       - "7800"
     ports:
       - "38080:8080"
+    networks:
+      default:
+        aliases:
+          - jgroups-cluster
 
   fibonacci-bot:
     image: moonkev/vertx_playground:1.0
@@ -116,13 +119,9 @@ services:
       - "-Dconfig.path=/app/conf/fibonacci-bot.conf"
       - "io.github.moonkev.vertx_playground.MainKt"
     depends_on:
-      gossip-router:
-        condition: service_started
-        restart: true
       grpc-service:
         condition: service_healthy
         restart: true
     deploy:
       mode: replicated
-      replicas: 3
-
+      replicas: 1

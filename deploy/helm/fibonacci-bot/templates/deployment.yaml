@@ -15,16 +15,9 @@ spec:
         app: fibonacci-bot
     spec:
       initContainers:
-        - name: wait-for-gossip-router
-          image: {{ .Values.global.busybox.image | default "busybox" }}
-          command:
-            [
-              "sh",
-              "-c",
-              "until nc -z gossip-router 7000; do echo waiting for gossip router; sleep 2; done;"
-            ]
         - name: wait-for-grpc-server
-          image: {{ .Values.global.busybox.image | default "busybox" }}
+          image: "busybox:1.37.0-uclibc"
+          imagePulPolicy: "IfNotPresent"
           command:
             [
               "sh",

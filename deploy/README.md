@@ -10,14 +10,14 @@ manually the following can be used from Linux/Mac from the repository root -
 
 ```bash
 ./gradlew build
-docker build -f deploy/Dockerfile -t moonkev/vertx_playground:1.0 .
+docker build -f deploy/Dockerfile -t moonkev/vertx_playground:latest .
 ```
 
 or from windows
 
 ```powerhsell
 gradlew.bat build
-docker build -f deploy\Dockerfile -t moonkev/vertx_playground:1.0 .
+docker build -f deploy\Dockerfile -t moonkev/vertx_playground:latest .
 ```
 
 

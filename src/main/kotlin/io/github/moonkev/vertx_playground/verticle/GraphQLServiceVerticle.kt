@@ -11,6 +11,7 @@ import graphql.schema.idl.RuntimeWiring
 import graphql.schema.idl.SchemaGenerator
 import graphql.schema.idl.SchemaParser
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.opentelemetry.api.trace.Span
 import io.reactivex.rxjava3.core.Flowable
 import io.vertx.core.Future
 import io.vertx.core.Promise
@@ -18,6 +19,7 @@ import io.vertx.core.VerticleBase
 import io.vertx.core.eventbus.Message
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
+import io.vertx.core.tracing.TracingPolicy
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.graphql.GraphQLHandler
@@ -62,6 +64,8 @@ class GraphQLServiceVerticle : VerticleBase() {
             }
             .type("Query") { builder ->
                 builder.dataFetcher("fibonacci") { env: DataFetchingEnvironment ->
+
+                    Span.current().setAttribute("foo", "bar")
                     val n: Int = env.getArgumentOrDefault("n", 0)
                     val request = FibonacciRequest.newBuilder().setN(n).build()
                     eventBus
@@ -115,13 +119,15 @@ class GraphQLServiceVerticle : VerticleBase() {
             .build()
 
         val graphqlSchema = SchemaGenerator().makeExecutableSchema(typeRegistry, runtimeWiring)
-        val graphql = GraphQL.newGraphQL(graphqlSchema).subscriptionExecutionStrategy(SubscriptionExecutionStrategy()).build()
+        val graphql =
+            GraphQL.newGraphQL(graphqlSchema).subscriptionExecutionStrategy(SubscriptionExecutionStrategy()).build()
         val router = Router.router(vertx)
 
         router.post().handler(BodyHandler.create())
         router.route("/graphql").handler(GraphQLHandler.create(graphql))
         router.route("/graphql-ws").handler(GraphQLWSHandler.create(graphql))
-        val httpServerOptions = HttpServerOptions().addWebSocketSubProtocol("graphql-transport-ws")
+        val httpServerOptions =
+            HttpServerOptions().addWebSocketSubProtocol("graphql-transport-ws")
 
         return vertx
             .createHttpServer(httpServerOptions)

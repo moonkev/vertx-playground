@@ -5,7 +5,7 @@ services:
     image: zookeeper:latest
 
   fibonacci-worker:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -24,7 +24,7 @@ services:
       replicas: 6
 
   rest-service:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -45,7 +45,7 @@ services:
       - "18080:8080"
 
   graphql-service:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -66,7 +66,7 @@ services:
       - "28080:8080"
 
   grpc-service:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -94,7 +94,7 @@ services:
       - "38080:8080"
 
   fibonacci-bot:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"

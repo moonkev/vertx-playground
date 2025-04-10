@@ -1,22 +1,8 @@
 name: vertx_playground
 
 services:
-#  gossip-router:
-#    image: moonkev/vertx_playground:1.0
-#    command:
-#      - "java"
-#      - "-cp"
-#      - "/app/conf:/app/uber.jar"
-#      - "org.jgroups.stack.GossipRouter"
-#      - "-bindaddress"
-#      - "0.0.0.0"
-#      - "-port"
-#      - "7000"
-#    expose:
-#      - "7000"
-
   fibonacci-worker:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -29,14 +15,14 @@ services:
       - "7800"
     deploy:
       mode: replicated
-      replicas: 6
+      replicas: 3
     networks:
       default:
         aliases:
           - jgroups-cluster
 
   rest-service:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -59,7 +45,7 @@ services:
           - jgroups-cluster
 
   graphql-service:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -82,7 +68,7 @@ services:
           - jgroups-cluster
 
   grpc-service:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"
@@ -111,7 +97,7 @@ services:
           - jgroups-cluster
 
   fibonacci-bot:
-    image: moonkev/vertx_playground:1.0
+    image: moonkev/vertx_playground:latest
     command:
       - "java"
       - "-cp"

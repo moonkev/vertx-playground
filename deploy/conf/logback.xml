@@ -9,7 +9,12 @@
     <appender-ref ref="STDOUT" />
   </root>
 
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
+
   <logger name="io.github.moonkev" level="info" />
+  <logger name="io.opentelemetry" level="info" />
 <!--  <logger name="org.jgroups" level="debug" />-->
 <!--  <logger name="org.infinispan" level="debug" />-->
 </configuration>

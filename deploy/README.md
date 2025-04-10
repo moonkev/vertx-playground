@@ -5,15 +5,24 @@
 If you do not have a kubernetes cluster available and do not wish to set one up, you can run the application using
 docker compose.
 
-simply install the image using the `build.sh` script, or manually build the uber jar and install the image.  The following
-can be used from Linux/Mac from the repository root -
+simply install the image using the `build.sh` script or manually build the uber jar and install the image.  To build
+manually the following can be used from Linux/Mac from the repository root -
 
 ```bash
 ./gradlew build
 docker build -f deploy/Dockerfile -t moonkev/vertx_playground:1.0 .
 ```
 
-After installing the image, simple run `docker compose up` from the `/deploy` directory.  The compose file exposes
+or from windows
+
+```powerhsell
+gradlew.bat build
+docker build -f deploy\Dockerfile -t moonkev/vertx_playground:1.0 .
+```
+
+
+After installing the image, simple run `docker compose -f compose-zookeeper.yaml up` or
+`docker compose -f compose-infinispan.yaml up` from the `/deploy` directory.  The compose file exposes
 the service apps on the following ports on your host machine so that you can access the services from apps 
 outside of docker -
 

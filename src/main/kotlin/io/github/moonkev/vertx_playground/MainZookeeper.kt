@@ -1,6 +1,14 @@
 package io.github.moonkev.vertx_playground
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import io.opentelemetry.api.OpenTelemetry
+import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator
+import io.opentelemetry.context.propagation.ContextPropagators
+import io.opentelemetry.exporter.logging.LoggingSpanExporter
+import io.opentelemetry.exporter.logging.otlp.OtlpJsonLoggingSpanExporter
+import io.opentelemetry.sdk.OpenTelemetrySdk
+import io.opentelemetry.sdk.trace.SdkTracerProvider
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor
 import io.vertx.config.ConfigRetriever
 import io.vertx.config.ConfigRetrieverOptions
 import io.vertx.core.DeploymentOptions
@@ -13,16 +21,32 @@ import io.vertx.kotlin.core.json.json
 import io.vertx.kotlin.core.json.obj
 import io.vertx.kotlin.core.vertxOptionsOf
 import io.vertx.spi.cluster.zookeeper.ZookeeperClusterManager
+import io.vertx.tracing.opentelemetry.OpenTelemetryOptions
+import org.slf4j.bridge.SLF4JBridgeHandler
 
 fun main() {
 
     val logger = KotlinLogging.logger { }
 
+    SLF4JBridgeHandler.removeHandlersForRootLogger()
+    SLF4JBridgeHandler.install();
+    val spanExporter = OtlpJsonLoggingSpanExporter.create()
+
+    val tracerProvider = SdkTracerProvider.builder()
+        .addSpanProcessor(SimpleSpanProcessor.create(spanExporter))
+        .build();
+
+    val openTelemetry: OpenTelemetry = OpenTelemetrySdk.builder()
+        .setTracerProvider(tracerProvider)
+        .setPropagators(ContextPropagators.create(W3CTraceContextPropagator.getInstance()))
+        .buildAndRegisterGlobal()
+
     val vertxOptions = vertxOptionsOf(
         eventBusOptions = eventBusOptionsOf(
             host = System.getProperty("vertx.eventbus.host"),
             port = Integer.getInteger("vertx.eventbus.port")
-        )
+        ),
+        tracingOptions = OpenTelemetryOptions(openTelemetry)
     )
 
     Vertx.builder().with(vertxOptions).withClusterManager(ZookeeperClusterManager()).buildClustered()
